@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "NMSSE_YiZhao", "NMSSE_YiZhao\NMSSE_YiZhao.vfproj", "{16ECA5DE-9B29-4BCF-8D07-5708AB821B55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16ECA5DE-9B29-4BCF-8D07-5708AB821B55}.Debug|x86.ActiveCfg = Debug|Win32
+		{16ECA5DE-9B29-4BCF-8D07-5708AB821B55}.Debug|x86.Build.0 = Debug|Win32
+		{16ECA5DE-9B29-4BCF-8D07-5708AB821B55}.Release|x86.ActiveCfg = Release|Win32
+		{16ECA5DE-9B29-4BCF-8D07-5708AB821B55}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE8DF6D1-FD9B-46D2-92D6-00DCE0F0DD68}
+	EndGlobalSection
+EndGlobal

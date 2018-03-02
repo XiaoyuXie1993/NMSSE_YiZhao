@@ -1,0 +1,8 @@
+! spectral density part
+eta            0.5
+omega_c       0.25
+beta          0.02
+! time evolution part
+time steps    1000
+total time    15.0
+trajectory    1000
