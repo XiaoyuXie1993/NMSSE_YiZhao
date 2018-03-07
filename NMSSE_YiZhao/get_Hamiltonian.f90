@@ -15,8 +15,7 @@ subroutine get_Hamiltonian(t, Hamiltonian)
   do i1 = 1, N_basis; do i2 = 1, N_basis
     do j = 1, N_omega
       omega = j * interval_omega
-      force(i1, i2) = force(i1, i2) + C(i1, i2, j) *  &
-                      dcmplx(real_f(beta, omega, phi(i1, i2, j), t), imag_f(beta, omega, phi(i1, i2, j), t))
+      force(i1, i2) = force(i1, i2) + C(i1, i2, j) * dcmplx(real_f(beta, omega, phi(i1, i2, j), t), imag_f(beta, omega, phi(i1, i2, j), t))
     end do
   end do; end do
 
@@ -58,8 +57,7 @@ double precision function real_f(beta, omega, phi, t)
   
   double precision, intent(in) :: beta, omega, phi, t
   
-  real_f = dsqrt(1.0d0 / dtanh(omega * hbar * beta * 0.5d0) + 1.0d0 / dsinh(omega * hbar * beta * 0.5d0)) * &
-           dcos(omega * t + phi)
+  real_f = dsqrt(1.0d0 / dtanh(omega * hbar * beta * 0.5d0) + 1.0d0 / dsinh(omega * hbar * beta * 0.5d0)) * dcos(omega * t + phi)
 
 end function
 
@@ -69,7 +67,6 @@ double precision function imag_f(beta, omega, phi, t)
   
   double precision, intent(in) :: beta, omega, phi, t
   
-  imag_f = dsqrt(1.0d0 / dtanh(omega * hbar * beta * 0.5d0) - 1.0d0 / dsinh(omega * hbar * beta * 0.5d0)) * &
-           dsin(omega * t + phi)
+  imag_f = dsqrt(1.0d0 / dtanh(omega * hbar * beta * 0.5d0) - 1.0d0 / dsinh(omega * hbar * beta * 0.5d0)) * dsin(omega * t + phi)
 
 end function

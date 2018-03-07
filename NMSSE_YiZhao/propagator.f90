@@ -8,37 +8,61 @@ subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
   double precision, intent(in) :: t
   double complex, intent(in) :: H(n_matrix, n_matrix)
   double complex, intent(out) :: expiHt(n_matrix, n_matrix)
-  double precision :: real_H(n_matrix, n_matrix), imag_H(n_matrix, n_matrix)
-  double precision :: ri_H(n_matrix, n_matrix), ir_H(n_matrix, n_matrix), commutor_H(n_matrix, n_matrix)
-  double precision :: expimag(n_matrix, n_matrix)
-  double complex :: expreal(n_matrix, n_matrix)!, expinter(n_matrix, n_matrix)
+  double complex :: H_Hermitian(n_matrix, n_matrix), H_commutor(n_matrix, n_matrix)
+  double complex :: H12(n_matrix, n_matrix), H21(n_matrix, n_matrix)
+  double complex :: expHermitian(n_matrix, n_matrix), expcommutor(n_matrix, n_matrix)
   double complex :: tmp(n_matrix, n_matrix)
+  double precision :: H_diag(n_matrix, n_matrix)
+  double precision :: expdiag(n_matrix, n_matrix)
 
-  do i1 = 1, n_matrix; do i2 = 1, n_matrix
-    real_H(i1, i2) = real(H(i1, i2))
-    imag_H(i1, i2) = imag(H(i1, i2))
-  end do; end do
+!  write(*, '(4f14.7)') H(1, :)
+!  write(*, '(4f14.7)') H(2, :)
+!  write(*, *)
+  
+  H_diag = 0.0d0
+  expdiag = 0.0d0
+  do i = 1, n_matrix
+    H_diag(i, i) = imag(H(i, i))
+    expdiag(i, i) = dexp(-H_diag(i, i) * t)
+    H12(:, i) = H_diag(i, i) * H(:, i)
+    H21(i, :) = H_diag(i, i) * H(i, :)
+  end do
+  H_Hermitian = H - H_diag * dcmplx(0.0d0, 1.0d0)
+  H_commutor = (H12 - H21) * dcmplx(0.0d0, 1.0d0)
 
-  call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, real_H, n_matrix, imag_H, n_matrix, 0.0d0, ri_H, n_matrix)
-  call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, imag_H, n_matrix, real_H, n_matrix, 0.0d0, ir_H, n_matrix)
-  commutor_H = ri_H - ir_H
-  write(*, '(2f14.5)')  real_H(1, :)
-  write(*, '(2f14.5)')  real_H(2, :)
-  write(*, *)
-  write(*, '(2f14.5)')  imag_H(1, :)
-  write(*, '(2f14.5)')  imag_H(2, :)
-  write(*, *)
-  write(*, '(2f14.5)')  commutor_H(1, :)
-  write(*, '(2f14.5)')  commutor_H(2, :)
-  write(*, *)
-stop
-  call expansion_Hamiltonian_real(n_matrix, real_H, t, expreal)
-  call expansion_Hamiltonian_real(n_matrix, commutor_H, 0.5d0 * t ** 2, expinter)
-  call expMatrix(n_matrix, -imag_H * t, expimag)
+!  write(*, '(4f14.7)') H_Hermitian(1, :)
+!  write(*, '(4f14.7)') H_Hermitian(2, :)
+!  write(*, *)
+!  write(*, '(2f14.7)') H_diag(1, :)
+!  write(*, '(2f14.7)') H_diag(2, :)
+!  write(*, *)
+!  write(*, '(4f14.7)') H_commutor(1, :)
+!  write(*, '(4f14.7)') H_commutor(2, :)
+!  write(*, *)
 
-  call dzgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expimag, n_matrix, expinter, n_matrix, 0.0d0, tmp, n_matrix)
-  call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expreal, n_matrix, tmp, n_matrix, 0.0d0, expiHt, n_matrix)
-!  call dzgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expimag, n_matrix, expreal, n_matrix, 0.0d0, expiHt, n_matrix)
+  call expansion_Hamiltonian_complex(n_matrix, H_Hermitian, t, expHermitian)
+  call expMatrix_complex(n_matrix, H_commutor * 0.5d0 * t ** 2, expcommutor)
+
+!  write(*, '(4f14.7)') expHermitian(1, :)
+!  write(*, '(4f14.7)') expHermitian(2, :)
+!  write(*, *)
+!  write(*, '(2f14.7)') expdiag(1, :)
+!  write(*, '(2f14.7)') expdiag(2, :)
+!  write(*, *)
+!  write(*, '(4f14.7)') expcommutor(1, :)
+!  write(*, '(4f14.7)') expcommutor(2, :)
+!  write(*, *)
+!  stop
+
+  call dzgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expdiag, n_matrix, expcommutor, n_matrix, 0.0d0, tmp, n_matrix)
+!  write(*, '(4f14.7)') tmp(1, :)
+!  write(*, '(4f14.7)') tmp(2, :)
+!  write(*, *)
+  call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expHermitian, n_matrix, tmp, n_matrix, 0.0d0, expiHt, n_matrix)
+  write(*, '(4f14.7)') expiHt(1, :)
+  write(*, '(4f14.7)') expiHt(2, :)
+  write(*, *)
+  stop
   
 end subroutine
 
@@ -55,75 +79,44 @@ subroutine expansion_Hamiltonian_real(n_matrix, H, t, expiHt)
   double precision :: tH(n_matrix, n_matrix)
   double precision :: jt
 
-  call diagonal(n_matrix, H, Ha, Hb)
+  call diagonal_real(n_matrix, H, Ha, Hb)
   jt = Hb * t / hbar
   tH = H
   do i = 1, n_Matrix
     tH(i, i) = tH(i, i) - Ha
   end do
   tH = tH / Hb
-  call expansion(n_Matrix, tH, jt, expiHt)
+  call expansion_real(n_Matrix, tH, jt, expiHt)
   expiHt = expiHt * cdexp(dcmplx(0.0d0, 1.0d0) * t * Ha / hbar)
 
 end subroutine
 
-!! exp(M) for real symmstric matrix
-subroutine expMatrix(n_matrix, Matrix, expM)
+!! calculate exp(i * H * t / hbar) using Chebyshev polynomials methods for complex Hamiltonian
+subroutine expansion_Hamiltonian_complex(n_matrix, H, t, expiHt)
+
+  use constants
 
   integer, intent(in) :: n_matrix
-  double precision, intent(in) :: Matrix(n_matrix, n_matrix)
-  double precision, intent(out) :: expM(n_matrix, n_matrix)
-  double precision :: eigenvector(n_matrix, n_matrix), tmp(n_matrix, n_matrix), expeigenvalue(n_matrix, n_matrix)
-  double precision :: eigenvalue(n_matrix)
-  integer :: info, lwork, liwork, lwmax
-  parameter(lwmax = 100000)
-  integer :: iwork(lwmax)
-  double precision :: work(lwmax)  
-  
-  eigenvector = Matrix
+  double precision, intent(in) :: t
+  double complex, intent(in) :: H(n_matrix, n_matrix)
+  double complex, intent(out) :: expiHt(n_matrix, n_matrix)
+  double precision :: Ha, Hb
+  double complex :: tH(n_matrix, n_matrix)
+  double precision :: jt
 
-  lwork = -1
-  liwork = -1
-
-  call dsyevd('V', 'L', n_matrix, eigenvector, n_matrix, eigenvalue, work, lwork, iwork, liwork, info)
-  
-  lwork = min(lwmax, int(work(1)))
-  liwork = min(lwmax, iwork(1))
-  
-  call dsyevd('V', 'L', n_matrix, eigenvector, n_matrix, eigenvalue, work, lwork, iwork, liwork, info)
-
-  expeigenvalue = 0.0d0
-  do i = 1, n_matrix
-    expeigenvalue(i, i) = dexp(eigenvalue(i))
+  call diagonal_complex(n_matrix, H, Ha, Hb)
+!  write(*, '(2f14.7)') Ha, Hb
+!  write(*, *)
+  jt = Hb * t / hbar
+  tH = H
+  do i = 1, n_Matrix
+    tH(i, i) = tH(i, i) - Ha
   end do
-
-  call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, eigenvector, n_matrix, expeigenvalue, n_matrix, 0.0d0, tmp, n_matrix)
-  call dgemm('N', 'T', n_matrix, n_matrix, n_matrix, 1.0d0, tmp, n_matrix, eigenvector, n_matrix, 0.0d0, expM, n_matrix)
-  
-end subroutine
-
-subroutine diagonal(n_Matrix, Matrix, ea, eb)
-
-  integer, intent(in) :: n_Matrix
-  double precision, intent(in) :: Matrix(n_Matrix, n_Matrix)
-  double precision, intent(out) :: ea, eb
-  double precision :: eigenvalue(n_Matrix)
-  integer :: info, lwork, liwork, lwmax
-  parameter(lwmax = 100000)
-  integer :: iwork(lwmax)
-  double precision :: work(lwmax)
-  
-  lwork = -1
-  liwork = -1
-  
-  call dsyevd('N', 'L', n_Matrix, Matrix, n_Matrix, eigenvalue, work, lwork, iwork, liwork, info)
-  
-  lwork = min(lwmax, int(work(1)))
-  liwork = min(lwmax, iwork(1))
-  
-  call dsyevd('N', 'L', n_Matrix, Matrix, n_Matrix, eigenvalue, work, lwork, iwork, liwork, info)
-  
-  ea = 0.5d0 * (eigenvalue(n_Matrix) + eigenvalue(1))
-  eb = 0.5d0 * (eigenvalue(n_Matrix) - eigenvalue(1))
+  tH = tH / Hb
+!  write(*, '(4f14.7)') tH(1, :)
+!  write(*, '(4f14.7)') tH(2, :)
+!  write(*, *)
+  call expansion_complex(n_Matrix, tH, jt, expiHt)
+  expiHt = expiHt * cdexp(dcmplx(0.0d0, 1.0d0) * t * Ha / hbar)
 
 end subroutine

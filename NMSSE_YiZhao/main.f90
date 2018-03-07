@@ -56,7 +56,7 @@ end module
 
 !! time evolution of a spin-boson system using parallel programing via mpi (J. Chem. Phys. 2013, 138, 014111)
 program spin_boson
-  
+
   use time_evolution
   use mpi
 
@@ -156,7 +156,7 @@ subroutine initialphi()
       phi(i1, i2, j) = phi(i1, i2, j) * 2.0d0 * pi
     end do
   end do; end do
-  
+
 end subroutine
 
 !! initial random seed from fortran manual
@@ -217,7 +217,7 @@ end subroutine
 
 ! density (population) of a electronic state  
 double precision function density(coeff)
-  
+
   double complex, intent(in) :: coeff
 
   density = dreal(coeff) ** 2 + dimag(coeff) ** 2

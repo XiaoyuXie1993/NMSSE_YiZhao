@@ -53,6 +53,7 @@
 		<File RelativePath=".\Chebyshev.f90"/>
 		<File RelativePath=".\get_Hamiltonian.f90"/>
 		<File RelativePath=".\main.f90"/>
+		<File RelativePath=".\matrix.f90"/>
 		<File RelativePath=".\propagator.f90"/>
 		<File RelativePath=".\TDSE.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

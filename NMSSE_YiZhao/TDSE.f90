@@ -15,7 +15,7 @@ subroutine solve_MSSE(n_time, t_total, n_eq, psi0, psi)
 !  call thirdterm_NM(n_time, t_total, third_term_NM)
 
   interval = t_total / n_time
-  
+
   do i = 1, n_time
     time = i * interval
     call get_Hamiltonian(time, Hamiltonian)
@@ -28,10 +28,10 @@ subroutine solve_MSSE(n_time, t_total, n_eq, psi0, psi)
 !    write(*, *)
 !    stop
     call expansion_Hamiltonian(n_eq, Hamiltonian, -interval, U)
-!    write(*, '(4f20.7)') U(1, :)
-!    write(*, '(4f20.7)') U(2, :)
-!    write(*, *)
-!    if(i == 20) stop
+    write(*, '(4f20.7)') U(1, :)
+    write(*, '(4f20.7)') U(2, :)
+    write(*, *)
+    if(i == 20) stop
 !    write(*, '(4f20.7)') U(1, :)
 !    write(*, '(4f20.7)') U(2, :)
 !    write(*, *)

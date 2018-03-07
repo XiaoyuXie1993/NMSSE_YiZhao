@@ -38,5 +38,5 @@ double precision function pBessel(x, n, m)
   do i = 1, m
     pBessel = pBessel * (-x * 0.50d0) / i
   end do
-  
+
 end function
