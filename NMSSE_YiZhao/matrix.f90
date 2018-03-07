@@ -81,13 +81,13 @@ subroutine expMatrix_complex(n_matrix, Matrix, Mx)
   lrwork = -1
   liwork = -1
 
-  call zheevd('V', 'L', n_Matrix, eigenvector, n_Matrix, eigenvalue, work, lwork, rwork, lrwork, iwork, liwork, info)
+  call zheevd('V', 'L', n_matrix, eigenvector, n_matrix, eigenvalue, work, lwork, rwork, lrwork, iwork, liwork, info)
   
   lwork = min(lwmax, int(work(1)))
   lrwork = min(lwmax, int(rwork(1)))
   liwork = min(lwmax, iwork(1))
   
-  call zheevd('V', 'L', n_Matrix, eigenvector, n_Matrix, eigenvalue, work, lwork, rwork, lrwork, iwork, liwork, info)
+  call zheevd('V', 'L', n_matrix, eigenvector, n_matrix, eigenvalue, work, lwork, rwork, lrwork, iwork, liwork, info)
 
   eigenvaluex = 0.0d0
   do i = 1, n_matrix

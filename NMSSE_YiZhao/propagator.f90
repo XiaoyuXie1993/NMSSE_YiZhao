@@ -28,7 +28,7 @@ subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
     H21(i, :) = H_diag(i, i) * H(i, :)
   end do
   H_Hermitian = H - H_diag * dcmplx(0.0d0, 1.0d0)
-  H_commutor = (H12 - H21) * dcmplx(0.0d0, 1.0d0)
+  H_commutor = (H12 - H21) * dcmplx(0.0d0, 1.0d0) * 0.5d0 * t ** 2
 
 !  write(*, '(4f14.7)') H_Hermitian(1, :)
 !  write(*, '(4f14.7)') H_Hermitian(2, :)
@@ -41,7 +41,7 @@ subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
 !  write(*, *)
 
   call expansion_Hamiltonian_complex(n_matrix, H_Hermitian, t, expHermitian)
-  call expMatrix_complex(n_matrix, H_commutor * 0.5d0 * t ** 2, expcommutor)
+  call expMatrix_complex(n_matrix, H_commutor, expcommutor)
 
 !  write(*, '(4f14.7)') expHermitian(1, :)
 !  write(*, '(4f14.7)') expHermitian(2, :)
@@ -55,9 +55,9 @@ subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
 !  stop
 
   call dzgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expdiag, n_matrix, expcommutor, n_matrix, 0.0d0, tmp, n_matrix)
-!  write(*, '(4f14.7)') tmp(1, :)
-!  write(*, '(4f14.7)') tmp(2, :)
-!  write(*, *)
+  write(*, '(4f14.7)') tmp(1, :)
+  write(*, '(4f14.7)') tmp(2, :)
+  write(*, *)
   call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, expHermitian, n_matrix, tmp, n_matrix, 0.0d0, expiHt, n_matrix)
   write(*, '(4f14.7)') expiHt(1, :)
   write(*, '(4f14.7)') expiHt(2, :)
