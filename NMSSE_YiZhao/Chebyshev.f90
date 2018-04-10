@@ -41,6 +41,7 @@ subroutine Cheyshev_polynomial_real(n_matrix, M, n, results)
   integer, intent(in) :: n_matrix, n
   double precision, intent(in) :: M(n_matrix, n_matrix)
   double precision, intent(out) :: results(n, n_matrix, n_matrix)
+  double precision :: alpha, beta
 
   results = 0.0d0
   do i = 1, n_matrix
@@ -48,6 +49,8 @@ subroutine Cheyshev_polynomial_real(n_matrix, M, n, results)
   end do
   results(2, :, :) = M
   
+  alpha = 1.0d0
+  beta = 0.0d0
   do i = 3, n
     call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, M, n_matrix, results(i - 1, :, :), n_matrix, 0.0d0, results(i, :, :), n_matrix)
     results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
@@ -98,6 +101,7 @@ subroutine Cheyshev_polynomial_complex(n_matrix, M, n, results)
   integer, intent(in) :: n_matrix, n
   double complex, intent(in) :: M(n_matrix, n_matrix)
   double complex, intent(out) :: results(n, n_matrix, n_matrix)
+  double complex :: alpha, beta
 
   results = 0.0d0
   do i = 1, n_matrix
@@ -105,8 +109,10 @@ subroutine Cheyshev_polynomial_complex(n_matrix, M, n, results)
   end do
   results(2, :, :) = M
   
+  alpha = dcmplx(1.0d0, 0.0d0)
+  beta = dcmplx(0.0d0, 0.0d0)
   do i = 3, n
-    call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, M, n_matrix, results(i - 1, :, :), n_matrix, 0.0d0, results(i, :, :), n_matrix)
+    call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, alpha, M, n_matrix, results(i - 1, :, :), n_matrix, beta, results(i, :, :), n_matrix)
     results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
   end do
 
