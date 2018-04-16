@@ -90,7 +90,6 @@ subroutine diagonal_complex(n_Matrix, Matrix, ea, eb)
 end subroutine
 
 !! exp(M) for complex Hermitian matrix
-!! exp(M) for complex Hermitian matrix
 subroutine expMatrix_complex(n_Matrix, Matrix, expM)
 
   integer, intent(in) :: n_Matrix
@@ -100,7 +99,7 @@ subroutine expMatrix_complex(n_Matrix, Matrix, expM)
   double complex, allocatable :: tmp(:, :)
   double precision, allocatable :: eigenvalue(:)
   double precision, allocatable :: expeigenvalue(:, :)
-  double complex :: alpha, beta
+  double complex :: alpha0, beta0
   integer :: info, lwork, lrwork, liwork, lwmax
   parameter(lwmax = 100000)
   integer, allocatable :: iwork(:)
@@ -154,15 +153,15 @@ subroutine expMatrix_complex(n_Matrix, Matrix, expM)
 !  stop
 
   allocate(tmp(n_Matrix, n_Matrix))
-  alpha = dcmplx(1.0d0, 0.0d0)
-  beta = dcmplx(0.0d0, 0.0d0)
-  call dzgemm('N', 'C', n_Matrix, n_Matrix, n_Matrix, alpha, expeigenvalue, n_Matrix, eigenvector, n_Matrix, beta, tmp, n_Matrix)
+  alpha0 = dcmplx(1.0d0, 0.0d0)
+  beta0 = dcmplx(0.0d0, 0.0d0)
+  call dzgemm('N', 'C', n_Matrix, n_Matrix, n_Matrix, alpha0, expeigenvalue, n_Matrix, eigenvector, n_Matrix, beta0, tmp, n_Matrix)
   deallocate(expeigenvalue)
 !  write(*, '(4f20.10)') tmp(1, :)
 !  write(*, '(4f20.10)') tmp(2, :)
 !  write(*, *)
 
-  call zgemm('N', 'N', n_Matrix, n_Matrix, n_Matrix, alpha, eigenvector, n_Matrix, tmp, n_Matrix, beta, expM, n_Matrix)
+  call zgemm('N', 'N', n_Matrix, n_Matrix, n_Matrix, alpha0, eigenvector, n_Matrix, tmp, n_Matrix, beta0, expM, n_Matrix)
   deallocate(tmp)
   deallocate(eigenvector)
 !  write(*, '(4f20.10)') expM(1, :)

@@ -15,8 +15,8 @@ program spin_boson
   allocate(stat(N_basis))
   allocate(diff_density(time_steps))
   call discretization()
-  call thirdterm_NM()
-  write(*, *) 'pass'
+!  call thirdterm_NM()
+!  write(*, *) 'pass'
 
 !  write(*, '(i4, 2f14.7)') time_steps, interval_time, total_time
 
@@ -58,7 +58,7 @@ program spin_boson
     close(22)
   end if
 
-end program 
+end program
 
 ! density (population) of a electronic state  
 double precision function density(coeff)

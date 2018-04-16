@@ -12,11 +12,8 @@ subroutine initial()
   read(11, *) N_basis
   allocate(H0(N_basis, N_basis))
   do i = 1, N_basis
-    read(11, *) H0(i, 1:i)
+    read(11, *) H0(i, :)
   end do
-  do i1 = 1, N_basis; do i2 = i1 + 1, N_basis
-    H0(i1, i2) = H0(i2, i1)
-  end do; end do
 !  write(*, '(i4)') N_basis
 !  do i1 = 1, N_basis; do i2 = 1, N_basis
 !      write(*, '(f10.5)', advance = 'no') H0(i1, i2)
@@ -30,11 +27,12 @@ subroutine initial()
   read(11, *) N_omega
   allocate(SP(N_basis, N_basis, N_omega))
   allocate(C(N_basis, N_basis, N_omega))
+!  allocate(S(N_basis, N_basis, N_omega))
   allocate(phi(N_basis, N_basis, N_omega))
   read(11, '(A)', advance = 'no') ch
   read(11, *) interval_omega
   read(11, '(A)', advance = 'no') ch
-  read(11, *) eta
+  read(11, *) alpha
   read(11, '(A)', advance = 'no') ch
   read(11, *) omega_c
   read(11, '(A)', advance = 'no') ch
@@ -53,7 +51,7 @@ subroutine initial()
   allocate(psi0(N_basis))
   read(11, '(A)', advance = 'no') ch
   read(11, *) psi0
-  allocate(third_term_NM(N_basis, N_basis, time_steps + 1))
+  allocate(third_term_NM(N_basis, N_basis, time_steps))
 !  write(*, '(i7, 2f10.5, i7)') time_steps, total_time, interval_time, N_statistic
   close(11)
 
@@ -71,7 +69,6 @@ subroutine initialphi()
       phi(i1, i2, j) = phi(i1, i2, j) * 2.0d0 * pi
     end do
   end do; end do
-  
   
 end subroutine
 

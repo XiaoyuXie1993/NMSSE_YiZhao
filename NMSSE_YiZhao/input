@@ -1,15 +1,15 @@
 ! Hamiltonian part
 number of states       2
-0.00
-1.00 0.00
+ ( 0.00,  0.00)  (1.00,  0.00)
+ ( 1.00,  0.00)  (0.00,  0.00)
 ! spectral density part
-number of 'modes'      100000
-omega interval         0.1
-eta                    0.5
-omega_c                5.0
-beta                   0.5
+number of 'modes'      10000
+omega interval         0.01
+alpha                  0.1
+omega_c                7.5
+beta                   5.0
 ! time evolution part
-time steps             10000
+time steps             1500
 total time             15.0
-trajectory             10000
-initial state          1.00  0.00
+trajectory             5000
+initial state          (  1.00,  0.00)  (  0.00  0.00)

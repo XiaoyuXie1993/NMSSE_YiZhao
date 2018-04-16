@@ -10,7 +10,7 @@ subroutine expansion_real(n_matrix, M, time, expiMt)
   double precision :: J(truncation0)
   double precision, allocatable :: T(:, :, :)
   double precision :: h
-  double complex :: pexpansion(n_matrix, n_matrix)
+  double complex, allocatable :: pexpansion(:, :)
 
   call Bessel_function(time, truncation0, truncation, J)
   allocate(T(truncation, n_matrix, n_matrix))
@@ -19,6 +19,8 @@ subroutine expansion_real(n_matrix, M, time, expiMt)
 !  do i = 1, truncation
 !    write(*, '(i5, 4f10.5)') i, J(i), T(i), (dcmplx(0.0d0, 1.0d0)) ** (i - 1)
 !  end do 
+  
+  allocate(pexpansion(n_matrix, n_matrix))
   
   expiMt = 0.0d0
   do i = 1, truncation
@@ -31,6 +33,8 @@ subroutine expansion_real(n_matrix, M, time, expiMt)
     expiMt = expiMt + pexpansion
   end do
 !  write(*, *) expansion
+  
+  deallocate(pexpansion)
   deallocate(T)
 
 end subroutine
@@ -41,20 +45,32 @@ subroutine Cheyshev_polynomial_real(n_matrix, M, n, results)
   integer, intent(in) :: n_matrix, n
   double precision, intent(in) :: M(n_matrix, n_matrix)
   double precision, intent(out) :: results(n, n_matrix, n_matrix)
-  double precision :: alpha, beta
+  double precision, allocatable :: M_tmp(:, :)
+  double precision :: alpha0, beta0
 
+  allocate(M_tmp(n_matrix, n_matrix))
+  
+  M_tmp = M
+  
   results = 0.0d0
   do i = 1, n_matrix
     results(1, i, i) = 1.0d0
   end do
-  results(2, :, :) = M
+
+  if(n >= 2) then
   
-  alpha = 1.0d0
-  beta = 0.0d0
-  do i = 3, n
-    call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, 1.0d0, M, n_matrix, results(i - 1, :, :), n_matrix, 0.0d0, results(i, :, :), n_matrix)
-    results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
-  end do
+    results(2, :, :) = M_tmp
+  
+    alpha0 = 1.0d0
+    beta0 = 0.0d0
+    do i = 3, n
+      call dgemm('N', 'N', n_matrix, n_matrix, n_matrix, alpha0, M_tmp, n_matrix, results(i - 1, :, :), n_matrix, beta0, results(i, :, :), n_matrix)
+      results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
+    end do
+  
+  end if
+  
+  deallocate(M_tmp)
 
 end subroutine
 
@@ -70,7 +86,7 @@ subroutine expansion_complex(n_matrix, M, time, expiMt)
   double precision :: J(truncation0)
   double complex, allocatable :: T(:, :, :)
   double precision :: h
-  double complex :: pexpansion(n_matrix, n_matrix)
+  double complex, allocatable :: pexpansion(:, :)
 
   call Bessel_function(time, truncation0, truncation, J)
   allocate(T(truncation, n_matrix, n_matrix))
@@ -79,6 +95,8 @@ subroutine expansion_complex(n_matrix, M, time, expiMt)
 !  do i = 1, truncation
 !    write(*, '(i5, 4f10.5)') i, J(i), T(i), (dcmplx(0.0d0, 1.0d0)) ** (i - 1)
 !  end do 
+  
+  allocate(pexpansion(n_matrix, n_matrix))
   
   expiMt = 0.0d0
   do i = 1, truncation
@@ -91,6 +109,8 @@ subroutine expansion_complex(n_matrix, M, time, expiMt)
     expiMt = expiMt + pexpansion
   end do
 !  write(*, *) expansion
+  
+  deallocate(pexpansion)
   deallocate(T)
 
 end subroutine
@@ -101,19 +121,31 @@ subroutine Cheyshev_polynomial_complex(n_matrix, M, n, results)
   integer, intent(in) :: n_matrix, n
   double complex, intent(in) :: M(n_matrix, n_matrix)
   double complex, intent(out) :: results(n, n_matrix, n_matrix)
-  double complex :: alpha, beta
+  double complex, allocatable :: M_tmp(:, :)
+  double complex :: alpha0, beta0
 
+  allocate(M_tmp(n_matrix, n_matrix))
+  
+  M_tmp = M
+  
   results = 0.0d0
   do i = 1, n_matrix
-    results(1, i, i) = 1.0d0
+    results(1, i, i) = dcmplx(1.0d0, 0.0d0)
   end do
-  results(2, :, :) = M
   
-  alpha = dcmplx(1.0d0, 0.0d0)
-  beta = dcmplx(0.0d0, 0.0d0)
-  do i = 3, n
-    call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, alpha, M, n_matrix, results(i - 1, :, :), n_matrix, beta, results(i, :, :), n_matrix)
-    results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
-  end do
+  if(n >= 2) then
+  
+    results(2, :, :) = M_tmp
+  
+    alpha0 = dcmplx(1.0d0, 0.0d0)
+    beta0 = dcmplx(0.0d0, 0.0d0)
+    do i = 3, n
+      call zgemm('N', 'N', n_matrix, n_matrix, n_matrix, alpha0, M_tmp, n_matrix, results(i - 1, :, :), n_matrix, beta0, results(i, :, :), n_matrix)
+      results(i, :, :) = 2.0d0 * results(i, :, :) - results(i - 2, :, :)
+    end do
+    
+  end if
 
+  deallocate(M_tmp)
+  
 end subroutine
