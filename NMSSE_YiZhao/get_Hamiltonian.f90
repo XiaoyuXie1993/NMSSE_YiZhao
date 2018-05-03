@@ -24,7 +24,7 @@ subroutine get_Hamiltonian(t, Hamiltonian)
   
 end subroutine
 
-!! Debye-Drude spectral density
+!! Debye spectral density
 subroutine discretization()
 
   use constants
@@ -33,13 +33,9 @@ subroutine discretization()
   double precision :: x_operator(2, 2)
   double precision :: omega, SP, pC
   
-  x_operator = 0.0d0
-  x_operator(1, 1) = 1.0d0
-  x_operator(2, 2) = -1.0d0
-  
   do i = 1, N_omega
     omega = i * interval_omega
-    SP = eta * omega * omega_c / (omega ** 2.0d0 + omega_c ** 2.0d0)
+    SP = 2.0d0 * eta * omega * omega_c / (omega ** 2.0d0 + omega_c ** 2.0d0)
     n_therm(i) = 1.0d0 / (dexp(omega * hbar * beta) - 1.0d0)
     pC = dsqrt(SP * interval_omega * hbar / pi)
     C(:, :, i) = pC * x_operator

@@ -1,11 +1,12 @@
 module constants
 
 !! constants
-  double precision :: pi, hbar
+  double precision :: pi, hbar, kB
   parameter(pi = 3.1415926535897932)
-  parameter(hbar = 1.0d0)
-  double complex :: ci
-  parameter(ci = dcmplx(0.0d0, 1.0d0))
+! reduced Planck constant with eV * fs
+  parameter (hbar = 0.658211951440)
+! Boltzmann constant with eV * K-1
+  parameter (kB = 0.000086173304)
 
 end module
 

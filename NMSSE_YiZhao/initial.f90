@@ -1,42 +1,43 @@
 subroutine initial()
 
+  use constants
   use spectral_density
   use time_evolution
   
+  double precision :: wntoeV, aveE, temperature
+  parameter (wntoeV = 0.00012398425)
   character*20 :: ch
-  
+
   open(11, file = 'input')
 ! Hamiltonian
   read(11, *)
   read(11, '(A)', advance = 'no') ch
   read(11, *) N_basis
   allocate(H0(N_basis, N_basis))
+  aveE = 0.0d0
   do i = 1, N_basis
     read(11, *) H0(i, :)
+    aveE = aveE + H0(i, i) / N_basis
   end do
-!  write(*, '(i4)') N_basis
-!  do i1 = 1, N_basis; do i2 = 1, N_basis
-!      write(*, '(f10.5)', advance = 'no') H0(i1, i2)
-!    end do
-!    write(*, *)
-!  end do
-!  stop
+  do i = 1, N_basis
+    H0(i, i) = H0(i, i) - aveE
+  end do
+  H0 = H0 * wntoeV
 ! paramters in spectral_density
   read(11, *)
   read(11, '(A)', advance = 'no') ch
   read(11, *) N_omega
-  allocate(n_therm(N_omega))
-  allocate(C(N_basis, N_basis, N_omega))
-  allocate(phi(N_basis, N_omega, 2))
   read(11, '(A)', advance = 'no') ch
   read(11, *) eta
+  eta = eta * wntoeV
   read(11, '(A)', advance = 'no') ch
   read(11, *) omega_c
-  interval_omega = 100.d0 * omega_c / N_omega
+  interval_omega = omega_c * 10.0d0 / N_omega
   read(11, '(A)', advance = 'no') ch
-  read(11, *) beta
-!  write(*, '(i7, 4f10.5, l5)') N_omega, interval_omega, eta, omega_c, beta
-!  stop
+  read(11, *) temperature
+  beta = 1.0d0 / (kB * temperature)
+  allocate(n_therm(N_omega), h(N_omega))
+  allocate(phi(N_basis, N_omega, 2))
 ! paramters in time_evolution
   read(11, *)
   read(11, '(A)', advance = 'no') ch
@@ -75,22 +76,20 @@ subroutine initialphi()
   use constants
   use spectral_density
   
-  double precision :: U1(N_omega), U2(N_omega)
-  double precision :: tmp1(N_omega), tmp2(N_omega)
+  double precision, allocatable :: U1(:), U2(:), tmp1(:), tmp2(:)
+  
+  allocate(U1(N_omega), U2(N_omega), tmp1(N_omega), tmp2(N_omega))
   
   do i = 1, N_basis
     call random_number(U1)
     call random_number(U2)
     tmp1 = dsqrt(-2.0d0 * dlog(U1))
     tmp2 = 2.0d0 * pi * U2
-    U1 = tmp1 * dcos(tmp2)
-    U2 = tmp1 * dsin(tmp2)
-    do j = 1, N_omega
-!      read(22, '(2i4, 2f14.7)') ni, nj, phi(i, j, 1), phi(i, j, 2)
-      phi(i, j, 1) = U1(j)
-      phi(i, j, 2) = U2(j)
-    end do
+    phi(i, :, 1) = tmp1 * dcos(tmp2)
+    phi(i, :, 2) = tmp1 * dsin(tmp2)
   end do
+
+  deallocate(U1, U2, tmp1, tmp2)
   
 end subroutine
 
