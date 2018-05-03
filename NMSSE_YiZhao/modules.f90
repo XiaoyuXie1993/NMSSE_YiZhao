@@ -4,6 +4,8 @@ module constants
   double precision :: pi, hbar
   parameter(pi = 3.1415926535897932)
   parameter(hbar = 1.0d0)
+  double complex :: ci
+  parameter(ci = dcmplx(0.0d0, 1.0d0))
 
 end module
 
@@ -27,7 +29,7 @@ module spectral_density
 !! parameters for discretization of spectral density
   integer :: N_omega
   double precision :: interval_omega
-  double precision, allocatable :: SP(:, :, :)
+  double precision, allocatable :: n_therm(:)
   double precision, allocatable :: C(:, :, :)
 !  double precision, allocatable :: S(:, :, :)
   double precision, allocatable :: phi(:, :, :)

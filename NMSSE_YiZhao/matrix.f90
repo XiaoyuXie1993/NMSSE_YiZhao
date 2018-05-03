@@ -115,7 +115,6 @@ subroutine expMatrix_complex(n_Matrix, Matrix, expM)
 !  write(*, '(4f20.10)') Matrix(2, :)
 !  write(*, *)
 
-  eigenvector = Matrix
 !  write(*, '(4f20.10)') eigenvector(1, :)
 !  write(*, '(4f20.10)') eigenvector(2, :)
 !  write(*, *)

@@ -4,7 +4,7 @@ subroutine initial()
   use time_evolution
   
   character*20 :: ch
-
+  
   open(11, file = 'input')
 ! Hamiltonian
   read(11, *)
@@ -25,16 +25,14 @@ subroutine initial()
   read(11, *)
   read(11, '(A)', advance = 'no') ch
   read(11, *) N_omega
-  allocate(SP(N_basis, N_basis, N_omega))
+  allocate(n_therm(N_omega))
   allocate(C(N_basis, N_basis, N_omega))
-!  allocate(S(N_basis, N_basis, N_omega))
-  allocate(phi(N_basis, N_basis, N_omega))
-  read(11, '(A)', advance = 'no') ch
-  read(11, *) interval_omega
+  allocate(phi(N_basis, N_omega, 2))
   read(11, '(A)', advance = 'no') ch
   read(11, *) alpha
   read(11, '(A)', advance = 'no') ch
   read(11, *) omega_c
+  interval_omega = 10.d0 * omega_c / N_omega
   read(11, '(A)', advance = 'no') ch
   read(11, *) beta
 !  write(*, '(i7, 4f10.5, l5)') N_omega, interval_omega, eta, omega_c, beta
@@ -57,18 +55,42 @@ subroutine initial()
 
 end subroutine
   
+!subroutine initialphi()
+!
+!  use constants
+!  use spectral_density
+!  
+!  phi = 0.0d0
+!  do i1 = 1, N_basis; do i2 = 1, i1
+!    do j = 1, N_omega
+!      call random_number(phi(i1, i2, j))
+!      phi(i1, i2, j) = phi(i1, i2, j) * 2.0d0 * pi
+!    end do
+!  end do; end do
+!  
+!end subroutine
+
 subroutine initialphi()
 
   use constants
   use spectral_density
   
-  phi = 0.0d0
-  do i1 = 1, N_basis; do i2 = 1, i1
+  double precision :: U1(N_omega), U2(N_omega)
+  double precision :: tmp1(N_omega), tmp2(N_omega)
+  
+  do i = 1, N_basis
+    call random_number(U1)
+    call random_number(U2)
+    tmp1 = dsqrt(-2.0d0 * dlog(U1))
+    tmp2 = 2.0d0 * pi * U2
+    U1 = tmp1 * dcos(tmp2)
+    U2 = tmp1 * dsin(tmp2)
     do j = 1, N_omega
-      call random_number(phi(i1, i2, j))
-      phi(i1, i2, j) = phi(i1, i2, j) * 2.0d0 * pi
+!      read(22, '(2i4, 2f14.7)') ni, nj, phi(i, j, 1), phi(i, j, 2)
+      phi(i, j, 1) = U1(j)
+      phi(i, j, 2) = U2(j)
     end do
-  end do; end do
+  end do
   
 end subroutine
 

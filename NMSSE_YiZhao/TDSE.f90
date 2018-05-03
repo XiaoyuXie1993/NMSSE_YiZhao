@@ -31,7 +31,8 @@ subroutine solve_MSSE(n_time, t_total, n_eq, psi0, third_term, psi)
 !    end do
 !    stop
 !    write(*, *)
-!    Hamiltonian = Hamiltonian + third_term(:, :, i)
+    Hamiltonian = Hamiltonian + third_term(:, :, i)
+!    write(33, '(5f10.5)') time, Hamiltonian(1, 1), Hamiltonian(2, 2)
 !    write(*, '(4f20.7)') Hamiltonian(1, :)
 !    write(*, '(4f20.7)') Hamiltonian(2, :)
 !    write(*, *)
@@ -43,7 +44,7 @@ subroutine solve_MSSE(n_time, t_total, n_eq, psi0, third_term, psi)
 !    write(*, '(4f20.10)') U(1, :)
 !    write(*, '(4f20.10)') U(2, :)
 !    write(*, *)
-    call expansion_Hamiltonian_test(n_eq, Hamiltonian, -interval, U)
+    call expansion_Hamiltonian_1(n_eq, Hamiltonian, -interval, U)
 !    write(*, '(4f20.10)') U(1, :)
 !    write(*, '(4f20.10)') U(2, :)
 !    write(*, *)
@@ -58,6 +59,5 @@ subroutine solve_MSSE(n_time, t_total, n_eq, psi0, third_term, psi)
       call zgemm('N', 'N', n_eq, 1, n_eq, alpha0, U, n_eq, psi(i - 1, :), n_eq, beta0, psi(i, :), n_eq)
     end if
   end do
-  stop
   
 end subroutine

@@ -1,6 +1,6 @@
 !! calculate exp(i * H * t / hbar) using Chebyshev polynomials methods for complex H (not Hermitian but Hij = Hji* for i /= j)
 !! using exp(i * M * t) = exp(i * (H + i * H_diagonal) * t) ~ exp(- H_diaganol * t / 2)exp(i * H * t)exp(- H_diaganol * t / 2) + O(t ^ 3)
-subroutine expansion_Hamiltonian_test(n_matrix, H, t, expiHt)
+subroutine expansion_Hamiltonian_1(n_matrix, H, t, expiHt)
 
   use constants
 
@@ -80,7 +80,7 @@ end subroutine
 
 !! calculate exp(i * H * t / hbar) using Chebyshev polynomials methods for complex H (not Hermitian but Hij = Hji* for i /= j)
 !! using exp(i * M * t) = exp(i * (H + i * H_diagonal) * t) ~ exp(i * H * t / 2)exp(- H_diaganol * t)exp(i * H * t / 2) + O(t ^ 3)
-subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
+subroutine expansion_Hamiltonian_2(n_matrix, H, t, expiHt)
 
   use constants
 
@@ -107,7 +107,7 @@ subroutine expansion_Hamiltonian(n_matrix, H, t, expiHt)
     expdiag(i, i) = dcmplx(dexp(-H_diag(i, i) * t / hbar), 0.0d0)
   end do
   allocate(H_Hermitian(n_matrix, n_matrix))
-  H_Hermitian = H - H_diag * dcmplx(0.0d0, 1.0d0)
+  H_Hermitian = H - H_diag * ci
   deallocate(H_diag)
 
 !  write(*, '(4f14.7)') H_Hermitian(1, :)
