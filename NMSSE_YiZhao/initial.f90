@@ -35,7 +35,7 @@ subroutine initial()
   interval_omega = 10.d0 * omega_c / N_omega
   read(11, '(A)', advance = 'no') ch
   read(11, *) beta
-!  write(*, '(i7, 4f10.5, l5)') N_omega, interval_omega, eta, omega_c, beta
+!  write(*, '(i7, 4f10.5, l5)') N_omega, interval_omega, alpha, omega_c, beta
 !  stop
 ! paramters in time_evolution
   read(11, *)

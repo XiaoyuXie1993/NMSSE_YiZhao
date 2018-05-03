@@ -31,7 +31,6 @@ module spectral_density
   double precision :: interval_omega
   double precision, allocatable :: n_therm(:)
   double precision, allocatable :: C(:, :, :)
-!  double precision, allocatable :: S(:, :, :)
   double precision, allocatable :: phi(:, :, :)
 
 end module
