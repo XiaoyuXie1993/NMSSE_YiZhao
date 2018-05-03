@@ -3,7 +3,7 @@ number of states       2
  ( 0.00,  0.00)  (1.00,  0.00)
  ( 1.00,  0.00)  (0.00,  0.00)
 ! spectral density part
-number of 'modes'      10000
+number of 'modes'      800
 etc                    0.5
 omega_c                5.0
 beta                   0.5

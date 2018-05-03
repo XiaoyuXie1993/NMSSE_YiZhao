@@ -12,7 +12,7 @@ program spin_boson
   double precision, allocatable :: diff_density(:), total_density(:)
   
   call initial()
-  allocate(stat(N_basis))
+  allocate(stat(MPI_STATUS_SIZE))
   allocate(diff_density(time_steps), total_density(time_steps))
   call discretization()
 
@@ -52,10 +52,10 @@ program spin_boson
 
   if(my_id == 0) then
     open(22, file = 'result.dat')
-    write(22, '(2f14.7)') 0.0d0, density(psi0(1)) - density(psi0(2))
+    write(22, '(3f14.7)') 0.0d0, density(psi0(1)) - density(psi0(2)), 1.0d0
     do i = 1, time_steps
       time = interval_time * i
-      write(22, '(2f14.7)') time, diff_density(i) / total_density(i)
+      write(22, '(3f14.7)') time, diff_density(i) / total_density(i), total_density(i)
     end do
     close(22)
   end if
