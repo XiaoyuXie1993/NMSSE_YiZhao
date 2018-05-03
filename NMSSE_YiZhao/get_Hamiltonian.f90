@@ -6,21 +6,21 @@ subroutine get_Hamiltonian(t, Hamiltonian)
 
   double precision, intent(in) :: t
   double complex, intent(out) :: Hamiltonian(N_basis, N_basis)
-  double precision :: x_operator(2, 2)
   double precision :: omega
   double complex :: force
   
+  Hamiltonian = H0
+  
   force = 0.0d0
-  x_operator = 0.0d0
-  x_operator(1, 1) = 1.0d0
-  x_operator(2, 2) = -1.0d0
   
-  do i = 1, N_omega
-    omega = i * interval_omega
-    force = force + C(1, 1, i) * (dsqrt(n_therm(i) * 0.5d0 + 0.5d0) * (phi(1, i, 1) + ci * phi(1, i, 2)) * cdexp(ci * omega * t) + dsqrt(n_therm(i) * 0.5d0) * (phi(1, i, 1) - ci * phi(1, i, 2)) * cdexp(-ci * omega * t))
+  do i = 1, N_basis
+    force = 0.0d0
+    do j = 1, N_omega
+      omega = j * interval_omega
+      force = force + h(j) * (dsqrt(n_therm(j) * 0.5d0 + 0.5d0) * (phi(i, j, 1) + ci * phi(i, j, 2)) * cdexp(ci * omega * t) + dsqrt(n_therm(j) * 0.5d0) * (phi(i, j, 1) - ci * phi(i, j, 2)) * cdexp(-ci * omega * t))
+    end do
+    Hamiltonian(i, i) = Hamiltonian(i, i) + force
   end do
-  
-  Hamiltonian = H0 + force * x_operator
   
 end subroutine
 
@@ -30,16 +30,20 @@ subroutine discretization()
   use constants
   use spectral_density
   
-  double precision :: x_operator(2, 2)
-  double precision :: omega, SP, pC
+  double precision :: e(N_basis, N_basis)
+  double precision :: omega, SP
+  
+  e = 0.0d0
+  do i = 1, N_basis
+    e(i, i) = 1.0d0
+  end do
   
   do i = 1, N_omega
     omega = i * interval_omega
     SP = 2.0d0 * eta * omega * omega_c / (omega ** 2.0d0 + omega_c ** 2.0d0)
-    n_therm(i) = 1.0d0 / (dexp(omega * hbar * beta) - 1.0d0)
-    pC = dsqrt(SP * interval_omega * hbar / pi)
-    C(:, :, i) = pC * x_operator
-!    stop
+    n_therm(i) = 1.0d0 / (dexp(beta * hbar * omega) - 1.0d0)
+    h(i) = dsqrt(SP * hbar * interval_omega / pi)
+    C(:, :, i) = h(i) * e
   end do
 
 end subroutine
@@ -59,7 +63,7 @@ subroutine thirdterm_NM()
   double complex :: tmp1(N_basis, N_basis), tmp2(N_basis, N_basis)
   double complex :: alpha0, beta0
   
-  allocate(stat(N_basis))
+  allocate(stat(MPI_STATUS_SIZE))
   third_term_NM = 0.0d0
   alpha0 = dcmplx(1.0d0, 0.0d0)
   beta0 = dcmplx(0.0d0, 0.0d0)
@@ -100,7 +104,7 @@ subroutine thirdterm_NM()
 !      write(*, *)
 !      end if
 !      stop
-      tmp2 = - tmp2 * cdexp(dcmplx(0.0d0, -omega * time)) * ci / hbar
+      tmp2 = -tmp2 * dcmplx(dtanh(hbar * omega * beta * 0.25d0) * dcos(omega * time), -dsin(omega * time)) * ci / hbar
       call dzgemm('N', 'N', N_basis, N_basis, N_basis, alpha0, C(:, :, j), N_basis, tmp2, N_basis, alpha0, dthirdterm(:, :, i_total), N_basis)
     end do
     do j = 0, num_procs - 1

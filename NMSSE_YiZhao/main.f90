@@ -9,11 +9,13 @@ program spin_boson
   integer, allocatable :: stat(:)
   double precision :: density
   double complex, allocatable :: psi(:, :, :)
-  double precision, allocatable :: diff_density(:), total_density(:)
+  double precision, allocatable :: total_density(:)
+  double precision, allocatable :: pdensity(:, :)
   
   call initial()
-  allocate(stat(N_basis))
-  allocate(diff_density(time_steps), total_density(time_steps))
+  allocate(stat(MPI_STATUS_SIZE))
+  allocate(total_density(time_steps))
+  allocate(pdensity(time_steps, N_basis))
   call discretization()
 
 !  write(*, '(i4, 2f14.7)') time_steps, interval_time, total_time
@@ -28,38 +30,46 @@ program spin_boson
   diff_density = 0.0d0
   total_density = 0.0d0
   do i = 1, n_traj_per_para
-    call init_random_seed(my_id)
+    if(mod(i - 1, 50) == 0) call init_random_seed(my_id)
     call initialphi()
     call solve_MSSE(time_steps, total_time, N_basis, psi0, third_term_NM, psi(i, :, :))
     if(my_id /= 0) then
       call MPI_SEND(psi(i, :, :), time_steps * N_basis, MPI_DOUBLE_COMPLEX, 0, i, MPI_COMM_WORLD, ierr)
     else
-      do k = 1, time_steps
-        diff_density(k) = diff_density(k) + (density(psi(i, k, 1)) - density(psi(i, k, 2))) /  (n_traj_per_para * num_procs)
-        total_density(k) =  total_density(k) + (density(psi(i, k, 1)) + density(psi(i, k, 2))) / (n_traj_per_para * num_procs)
-      end do
+      do k = 1, time_steps; do l = 1, N_basis
+        pdensity(k, l) = pdensity(k, l) + density(psi(i, k, l)) / (n_traj_per_para * num_procs)
+        total_density(k) = total_density(k) + density(psi(i, k, l)) / (n_traj_per_para * num_procs)
+      end do; end do
       do j = 1, num_procs - 1
         call MPI_RECV(psi(i, :, :), time_steps * N_basis, MPI_DOUBLE_COMPLEX, j, i, MPI_COMM_WORLD, stat, ierr)
-        do k = 1, time_steps
-        diff_density(k) = diff_density(k) + (density(psi(i, k, 1)) - density(psi(i, k, 2))) /  (n_traj_per_para * num_procs)
-        total_density(k) =  total_density(k) + (density(psi(i, k, 1)) + density(psi(i, k, 2))) / (n_traj_per_para * num_procs)
-        end do
+        do k = 1, time_steps; do l = 1, N_basis
+          pdensity(k, l) = pdensity(k, l) + density(psi(i, k, l)) / (n_traj_per_para * num_procs)
+          total_density(k) = total_density(k) + density(psi(i, k, l)) / (n_traj_per_para * num_procs)
+        end do; end do
       end do
     end if
   end do
   
   call MPI_FINALIZE(ierr)
-
+  
   if(my_id == 0) then
     open(22, file = 'result.dat')
-    write(22, '(2f14.7)') 0.0d0, density(psi0(1)) - density(psi0(2))
+    write(22, '(f14.7)', advance = 'no') 0.0d0
+    do i = 1, N_basis
+      write(22, '(f14.7)', advance = 'no') density(psi0(i))
+    end do
+    write(22, '(f14.7)') 1.0d0
     do i = 1, time_steps
       time = interval_time * i
-      write(22, '(2f14.7)') time, diff_density(i) / total_density(i)
+      write(22,  '(f14.7)', advance = 'no') time
+      do j = 1, N_basis
+        write(22, '(f14.7)', advance = 'no') pdensity(i, j) / total_density(i)
+      end do
+      write(22, '(f14.7)') total_density(i)
     end do
     close(22)
   end if
-
+  
 end program
 
 ! density (population) of a electronic state  

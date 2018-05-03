@@ -4,8 +4,9 @@ subroutine initial()
   use spectral_density
   use time_evolution
   
-  double precision :: wntoeV, aveE, temperature
+  double precision :: wntoeV, temperature
   parameter (wntoeV = 0.00012398425)
+  double complex :: aveE
   character*20 :: ch
 
   open(11, file = 'input')
@@ -37,6 +38,7 @@ subroutine initial()
   read(11, *) temperature
   beta = 1.0d0 / (kB * temperature)
   allocate(n_therm(N_omega), h(N_omega))
+  allocate(C(N_basis, N_basis, N_omega))
   allocate(phi(N_basis, N_omega, 2))
 ! paramters in time_evolution
   read(11, *)
@@ -55,21 +57,6 @@ subroutine initial()
   close(11)
 
 end subroutine
-  
-!subroutine initialphi()
-!
-!  use constants
-!  use spectral_density
-!  
-!  phi = 0.0d0
-!  do i1 = 1, N_basis; do i2 = 1, i1
-!    do j = 1, N_omega
-!      call random_number(phi(i1, i2, j))
-!      phi(i1, i2, j) = phi(i1, i2, j) * 2.0d0 * pi
-!    end do
-!  end do; end do
-!  
-!end subroutine
 
 subroutine initialphi()
 
