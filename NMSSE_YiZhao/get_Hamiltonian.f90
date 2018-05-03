@@ -63,7 +63,7 @@ subroutine thirdterm_NM()
   double complex :: tmp1(N_basis, N_basis), tmp2(N_basis, N_basis)
   double complex :: alpha0, beta0
   
-  allocate(stat(N_basis))
+  allocate(stat(MPI_STATUS_SIZE))
   third_term_NM = 0.0d0
   alpha0 = dcmplx(1.0d0, 0.0d0)
   beta0 = dcmplx(0.0d0, 0.0d0)
