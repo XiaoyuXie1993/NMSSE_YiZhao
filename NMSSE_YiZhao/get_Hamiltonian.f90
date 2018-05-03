@@ -39,7 +39,7 @@ subroutine discretization()
   
   do i = 1, N_omega
     omega = i * interval_omega
-    SP = pi * 0.5d0 * alpha * omega * dexp(- omega / omega_c)
+    SP = eta * omega * omega_c / (omega ** 2.0d0 + omega_c ** 2.0d0)
     n_therm(i) = 1.0d0 / (dexp(omega * hbar * beta) - 1.0d0)
     pC = dsqrt(SP * interval_omega * hbar / pi)
     C(:, :, i) = pC * x_operator
