@@ -104,7 +104,7 @@ subroutine thirdterm_NM()
 !      write(*, *)
 !      end if
 !      stop
-      tmp2 = - tmp2 * cdexp(dcmplx(0.0d0, -omega * time)) * ci / hbar
+      tmp2 = - tmp2 * dcmplx(dtanh(hbar * omega * beta * 0.25d0) * dcos(omega * time), -dsin(omega * time)) * ci / hbar
       call dzgemm('N', 'N', N_basis, N_basis, N_basis, alpha0, C(:, :, j), N_basis, tmp2, N_basis, alpha0, dthirdterm(:, :, i_total), N_basis)
     end do
     do j = 0, num_procs - 1
