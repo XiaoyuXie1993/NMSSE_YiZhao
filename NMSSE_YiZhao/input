@@ -15,5 +15,5 @@ temperature / K          300.0
 ! time evolution part
 time steps               1000
 total time / fs          1000
-trajectory               10000
+trajectory               50000
 initial state            (1.00, 0.00)  (0.00, 0.00)  (0.00, 0.00)  (0.00, 0.00)  (0.00, 0.00)  (0.00, 0.00)  (0.00, 0.00)
