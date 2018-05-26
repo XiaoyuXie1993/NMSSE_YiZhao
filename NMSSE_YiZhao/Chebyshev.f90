@@ -6,7 +6,7 @@ subroutine expansion_real(n_matrix, M, time, expiMt)
   double precision, intent(in) :: time
   double complex, intent(out) :: expiMt(n_matrix, n_matrix)
   integer :: truncation0, truncation
-  parameter(truncation0 = 100000)
+  parameter(truncation0 = 1000)
   double precision :: J(truncation0)
   double precision, allocatable :: T(:, :, :)
   double precision :: h

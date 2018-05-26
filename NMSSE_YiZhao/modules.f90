@@ -14,11 +14,14 @@ end module
 
 module Hamiltonian_electronic
 
-!! parameters of electronic Hamiltonian (two level system with spin-boson model)
+! number of molecules on a/b direction (2D system)
+  integer :: Na, Nb
+! parameters for model Hamiltonian
+  double precision :: epsilon, Va, Vb, Vab
 ! basis set of electronic states
   integer :: N_basis
 ! Hamiltonian elements
-  double complex, allocatable :: H0(:, :)
+  double precision, allocatable :: H0(:, :)
 
 end module
 
@@ -26,8 +29,6 @@ module spectral_density
 
   use Hamiltonian_electronic
 
-!! parameters of Debye-Drude spectral density J(omega) = eta * omega * omega_c / (omega ** 2.0d0 + omega_c ** 2.0d0)
-  double precision :: eta, omega_c
   double precision :: beta
 !! parameters for discretization of spectral density
   integer :: N_omega
